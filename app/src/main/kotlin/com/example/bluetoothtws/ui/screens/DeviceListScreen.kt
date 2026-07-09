@@ -27,4 +27,77 @@ import com.example.bluetoothtws.ui.components.LoadingState
 import com.example.bluetoothtws.ui.components.ScanningIndicator
 
 @Composable
-fun DeviceListScreen(\n    devices: List<TWBSDevice>,\n    onDeviceSelected: (TWBSDevice) -> Unit,\n    onRefresh: () -> Unit,\n    isScanning: Boolean,\n    isLoading: Boolean = false\n) {\n    Column(\n        modifier = Modifier\n            .fillMaxSize()\n            .padding(top = 8.dp)\n    ) {\n        // Scan button header\n        Column(\n            modifier = Modifier\n                .fillMaxWidth()\n                .padding(16.dp),\n            horizontalAlignment = Alignment.CenterHorizontally\n        ) {\n            Button(\n                onClick = onRefresh,\n                enabled = !isScanning && !isLoading,\n                modifier = Modifier.fillMaxWidth(),\n                colors = ButtonDefaults.buttonColors(\n                    containerColor = MaterialTheme.colorScheme.primary,\n                    disabledContainerColor = MaterialTheme.colorScheme.outlineVariant\n                )\n            ) {\n                Icon(\n                    imageVector = Icons.Default.Search,\n                    contentDescription = \"Scan\",\n                    modifier = Modifier.padding(end = 8.dp)\n                )\n                Text(\n                    text = if (isScanning) \"Scanning...\" else \"Scan for Devices\",\n                    fontSize = 16.sp,\n                    fontWeight = FontWeight.SemiBold\n                )\n            }\n\n            // Info text\n            Text(\n                text = \"${devices.size} device(s) available\",\n                fontSize = 12.sp,\n                color = MaterialTheme.colorScheme.onSurfaceVariant,\n                modifier = Modifier.padding(top = 8.dp)\n            )\n        }\n\n        // Content\n        when {\n            isLoading -> LoadingState(\"Loading devices...\")\n            isScanning && devices.isEmpty() -> ScanningIndicator()\n            devices.isEmpty() -> EmptyDevicesState(isScanning = isScanning)\n            else -> {\n                LazyColumn(\n                    modifier = Modifier.fillMaxSize(),\n                    verticalArrangement = Arrangement.spacedBy(4.dp),\n                    contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 16.dp)\n                ) {\n                    items(\n                        items = devices,\n                        key = { it.address }\n                    ) { device ->\n                        DeviceCard(\n                            device = device,\n                            onClick = onDeviceSelected\n                        )\n                    }\n                }\n            }\n        }\n    }\n}\n
+fun DeviceListScreen(
+    devices: List<TWBSDevice>,
+    onDeviceSelected: (TWBSDevice) -> Unit,
+    onRefresh: () -> Unit,
+    isScanning: Boolean,
+    isLoading: Boolean = false
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 8.dp)
+    ) {
+        // Scan button header
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = onRefresh,
+                enabled = !isScanning && !isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.outlineVariant
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Scan",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = if (isScanning) "Scanning..." else "Scan for Devices",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // Info text
+            Text(
+                text = "${devices.size} device(s) available",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        // Content
+        when {
+            isLoading -> LoadingState("Loading devices...")
+            isScanning && devices.isEmpty() -> ScanningIndicator()
+            devices.isEmpty() -> EmptyDevicesState(isScanning = isScanning)
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 16.dp)
+                ) {
+                    items(
+                        items = devices,
+                        key = { it.address }
+                    ) { device ->
+                        DeviceCard(
+                            device = device,
+                            onClick = onDeviceSelected
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
